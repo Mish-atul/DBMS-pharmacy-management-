@@ -8,7 +8,7 @@ const Tesseract = require('tesseract.js');
 const { GoogleGenAI } = require("@google/genai");
 
 // Set the environment variable for the SDK to pick up
-process.env.GEMINI_API_KEY = "AIzaSyBXVvTTeMGdzlprFybAgMywtKRFQALofvs";
+process.env.GEMINI_API_KEY = "";//your api key
 const ai = new GoogleGenAI({});
 
 const app = express();
