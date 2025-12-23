@@ -65,11 +65,16 @@ cd client
 npm install
 ```
 
-### 3. Database Setup (Already Done)
-The `server/server.js` automatically connects to `pharmacy.db`. If you need to reset the data, delete `pharmacy.db` and run:
+### 3. Database Setup (Required for First Run)
+Since the database file is not included in the repository (it is in .gitignore), you must initialize it:
 ```bash
+cd server
 node setup_db.js
 ```
+This script will:
+1. Create `pharmacy.db`.
+2. Create the `users` and `medicines` tables.
+3. Import 11,000+ medicine records from `Medicine_Details.csv`.
 
 ### 4. API Key Configuration
 The project uses a hardcoded API key in `server.js` for demo purposes.
