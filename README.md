@@ -1,53 +1,107 @@
-# Pharmacy Management System Demo
+# Pharmacy Management System Demo 💊
 
-This is a demo project for a Pharmacy Management System, consisting of a Node.js/Express server and a React (Vite) client.
+A full-stack web application for managing pharmacy operations, featuring an AI-powered inventory assistant (RAG) and Prescription OCR.
 
-## structure
+## 🚀 Features
 
-- `client/`: React frontend application.
-- `server/`: Node.js backend server with SQLite database.
+### 1. **Smart Inventory Management**
+- **Database**: Powered by **SQLite** (`pharmacy.db`), pre-seeded with 11,000+ real medicine records.
+- **Search**: Fast filtering by medicine name, composition, or usage.
 
-## Prerequisites
+### 2. **AI Chatbot with RAG (Retrieval-Augmented Generation)**
+- **Intelligent**: Uses **Google Gemini 2.5 Flash** (with auto-fallback to 1.5 Flash) to understand natural language queries.
+- **Context-Aware**: The bot extracts symptoms from your query, searches the local inventory database, and suggests *only* medicines that are actually in stock.
+- **Tech**: Built using the official `@google/genai` SDK.
 
-- Node.js installed on your machine.
+### 3. **Prescription Digitization (OCR)**
+- Upload prescription images to extract text automatically using **Tesseract.js**.
 
-## Setup and Running
+### 4. **User Authentication**
+- Simple Register/Login system (stored in SQLite users table).
 
-### Backend (Server)
+## 🛠️ Tech Stack
 
-1. Navigate to the server directory:
-   ```bash
-   cd server
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the server:
-   ```bash
-   node server.js
-   ```
-   The server runs on port 5000 (default).
+- **Frontend**: React.js (Vite), CSS Modules.
+- **Backend**: Node.js, Express.js.
+- **Database**: SQLite3.
+- **AI/ML**: Google Gemini API, Tesseract.js.
 
-### Frontend (Client)
+## 📂 Project Structure
 
-1. Navigate to the client directory:
-   ```bash
-   cd client
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the development server:
-   ```bash
-   npm run dev
-   ```
-   The application will be accessible at the URL provided by Vite (usually http://localhost:5173).
+```
+/
+├── client/                 # React Frontend
+│   ├── src/
+│   │   ├── App.jsx         # Main UI Logic
+│   │   └── App.css         # Styling
+│   └── ...
+├── server/                 # Node.js Backend
+│   ├── server.js           # API Server (Express + RAG Logic)
+│   ├── setup_db.js         # Database Seeding Script
+│   ├── pharmacy.db         # SQLite Database
+│   ├── uploads/            # Uploaded Rx Images
+│   └── ...
+└── Medicine_Details.csv    # Source Dataset
+```
 
-## Features
+## ⚡ parameters & Setup
 
-- Medicine search and listing.
-- Prescription upload (OCR integration).
-- Chatbot stub.
-- SQLite database integration.
+### 1. Prerequisites
+- Node.js (v18 or higher)
+- Google Gemini API Key
+
+### 2. Install Dependencies
+
+**Server:**
+```bash
+cd server
+npm install
+```
+*(Dependencies: express, sqlite3, cors, multer, tesseract.js, @google/genai)*
+
+**Client:**
+```bash
+cd client
+npm install
+```
+
+### 3. Database Setup (Already Done)
+The `server/server.js` automatically connects to `pharmacy.db`. If you need to reset the data, delete `pharmacy.db` and run:
+```bash
+node setup_db.js
+```
+
+### 4. API Key Configuration
+The project uses a hardcoded API key in `server.js` for demo purposes.
+To change it, edit `server/server.js`:
+```javascript
+process.env.GEMINI_API_KEY = "YOUR_NEW_API_KEY";
+```
+
+## 🏃‍♂️ How to Run
+
+**Step 1: Start the Backend**
+Open a terminal in the `server` folder:
+```bash
+cd server
+node server.js
+```
+*Server runs on: `http://localhost:3000`*
+
+**Step 2: Start the Frontend**
+Open a **new** terminal in the `client` folder:
+```bash
+cd client
+npm run dev
+```
+*Frontend runs on: `http://localhost:5173` (or similar)*
+
+**Step 3: Usage**
+1. Open the Frontend URL.
+2. Register/Login.
+3. Go to **Medicines** to browse stock.
+4. Go to **AI Chat** to ask health questions (e.g., "I have a headache, what do you have?").
+5. Go to **Upload Rx** to test OCR.
+
+## 📸 Screenshots
+*(Add screenshots here)*

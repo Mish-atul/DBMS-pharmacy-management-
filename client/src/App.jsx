@@ -7,7 +7,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [medicines, setMedicines] = useState([]);
   const [ocrResult, setOcrResult] = useState('');
-  const [chatLog, setChatLog] = useState([]);
+  const [chatLog, setChatLog] = useState([{ role: 'bot', text: 'Hello! I am your AI health assistant. How can I help you today?' }]);
   const [chatInput, setChatInput] = useState('');
 
   // --- Auth Handlers ---
@@ -71,8 +71,11 @@ function App() {
   // --- OCR Handler ---
   const handleUpload = async (e) => {
     e.preventDefault();
+    const file = e.target.files[0];
+    if (!file) return;
+
     const formData = new FormData();
-    formData.append('prescription', e.target.file.files[0]);
+    formData.append('prescription', file);
 
     setOcrResult("Processing... please wait.");
 
@@ -111,28 +114,52 @@ function App() {
   // --- Render Sections ---
   if (!user && view !== 'register') {
     return (
-      <div className="container auth-container">
-        <h1>PharmaDemo Login</h1>
-        <form onSubmit={handleLogin}>
-          <input name="username" placeholder="Username" required />
-          <input name="password" type="password" placeholder="Password" required />
-          <button type="submit">Login</button>
-        </form>
-        <p>New here? <button className="link-btn" onClick={() => setView('register')}>Register</button></p>
+      <div className="auth-container">
+        <div className="auth-box">
+          <h1>Welcome Back</h1>
+          <p>Login to access your pharmacy dashboard</p>
+          <form className="auth-form" onSubmit={handleLogin}>
+            <div className="input-group">
+              <i className="fas fa-user"></i>
+              <input name="username" placeholder="Username" required />
+            </div>
+            <div className="input-group">
+              <i className="fas fa-lock"></i>
+              <input name="password" type="password" placeholder="Password" required />
+            </div>
+            <button className="primary-btn" type="submit">Login</button>
+          </form>
+          <p style={{ marginTop: '20px' }}>
+            New here?
+            <button className="link-btn" onClick={() => setView('register')}>Create an account</button>
+          </p>
+        </div>
       </div>
     );
   }
 
   if (!user && view === 'register') {
     return (
-      <div className="container auth-container">
-        <h1>Register</h1>
-        <form onSubmit={handleRegister}>
-          <input name="username" placeholder="Choose Username" required />
-          <input name="password" type="password" placeholder="Choose Password" required />
-          <button type="submit">Register</button>
-        </form>
-        <p>Have an account? <button className="link-btn" onClick={() => setView('login')}>Login</button></p>
+      <div className="auth-container">
+        <div className="auth-box">
+          <h1>Create Account</h1>
+          <p>Join PharmaDemo today</p>
+          <form className="auth-form" onSubmit={handleRegister}>
+            <div className="input-group">
+              <i className="fas fa-user-plus"></i>
+              <input name="username" placeholder="Choose Username" required />
+            </div>
+            <div className="input-group">
+              <i className="fas fa-key"></i>
+              <input name="password" type="password" placeholder="Choose Password" required />
+            </div>
+            <button className="primary-btn" type="submit">Register</button>
+          </form>
+          <p style={{ marginTop: '20px' }}>
+            Already have an account?
+            <button className="link-btn" onClick={() => setView('login')}>Login here</button>
+          </p>
+        </div>
       </div>
     );
   }
@@ -140,37 +167,65 @@ function App() {
   return (
     <div className="app-shell">
       <nav className="navbar">
-        <div className="logo">Pharmacy Demo</div>
+        <div className="logo">
+          <i className="fas fa-prescription-bottle-alt"></i>
+          PharmaDemo
+        </div>
         <div className="nav-links">
-          <button className={view === 'medicines' ? 'active' : ''} onClick={() => setView('medicines')}>Medicines</button>
-          <button className={view === 'upload' ? 'active' : ''} onClick={() => setView('upload')}>Upload Rx (OCR)</button>
-          <button className={view === 'chat' ? 'active' : ''} onClick={() => setView('chat')}>AI Chat</button>
-          <button onClick={handleLogout}>Logout ({user.username})</button>
+          <button className={view === 'medicines' ? 'active' : ''} onClick={() => setView('medicines')}>
+            <i className="fas fa-pills"></i> Medicines
+          </button>
+          <button className={view === 'upload' ? 'active' : ''} onClick={() => setView('upload')}>
+            <i className="fas fa-file-medical-alt"></i> Upload Rx
+          </button>
+          <button className={view === 'chat' ? 'active' : ''} onClick={() => setView('chat')}>
+            <i className="fas fa-robot"></i> AI Assistant
+          </button>
+          <button className="logout-btn" onClick={handleLogout}>
+            <i className="fas fa-sign-out-alt"></i> Logout
+          </button>
         </div>
       </nav>
 
       <main className="content">
         {view === 'medicines' && (
           <div className="medicines-page">
+            <div className="page-header">
+              <h2>Find Medicines</h2>
+              <p style={{ color: '#64748b' }}>Search our extensive database of medicines</p>
+            </div>
             <div className="search-bar">
               <input
                 placeholder="Search medicines, composition, usage..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <button onClick={fetchMedicines}>Search</button>
+              <button className="search-btn" onClick={fetchMedicines}>
+                <i className="fas fa-search"></i>
+              </button>
             </div>
             <div className="medicine-grid">
               {medicines.map(med => (
                 <div key={med.medicine_id} className="medicine-card">
-                  {med.image_url ? <img src={med.image_url} alt={med.name} onError={(e) => e.target.style.display = 'none'} /> : <div className="placeholder-img">No Image</div>}
-                  <h3>{med.name}</h3>
-                  <p className="composition"><strong>Comp:</strong> {med.composition}</p>
-                  <p className="uses"><strong>Uses:</strong> {med.uses}</p>
-                  <div className="stats">
-                    <span>⭐ {med.excellent_review_pct}% Exc.</span>
+                  <div className="card-img-wrapper">
+                    {med.image_url ?
+                      <img src={med.image_url} alt={med.name} onError={(e) => e.target.style.display = 'none'} />
+                      : <i className="fas fa-image placeholder-img"></i>
+                    }
                   </div>
-                  <button className="buy-btn" onClick={() => alert('Added to cart mock!')}>Add to Cart</button>
+                  <div className="card-content">
+                    <h3>{med.name}</h3>
+                    <span className="badge">{med.composition}</span>
+                    <p className="details"><strong>Uses:</strong> {med.uses}</p>
+                    <div className="stats">
+                      <div className="rating">
+                        <i className="fas fa-star"></i> {med.excellent_review_pct}%
+                      </div>
+                      <button className="add-btn" onClick={() => alert('Added to cart mock!')}>
+                        Add to Cart
+                      </button>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -178,39 +233,55 @@ function App() {
         )}
 
         {view === 'upload' && (
-          <div className="upload-page">
+          <div className="upload-container">
             <h2>Upload Prescription</h2>
-            <p>Upload an image of a prescription to extract text using OCR.</p>
-            <form onSubmit={handleUpload}>
-              <input type="file" name="file" accept="image/*" required />
-              <button type="submit">Start OCR</button>
-            </form>
+            <p style={{ color: '#64748b', marginBottom: '30px' }}>Upload a clear image of your prescription to digitize it.</p>
+
+            <label className="upload-box">
+              <input type="file" className="file-input" accept="image/*" onChange={handleUpload} />
+              <i className="fas fa-cloud-upload-alt upload-icon"></i>
+              <h4>Click or Drag to Upload</h4>
+              <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>Supported formats: PNG, JPG, JPEG</p>
+            </label>
+
             {ocrResult && (
-              <div className="ocr-result">
-                <h3>Extracted Text:</h3>
-                <pre>{ocrResult}</pre>
+              <div className="ocr-result-box">
+                <h3><i className="fas fa-file-alt"></i> Extracted Text</h3>
+                <div className="ocr-code">{ocrResult}</div>
               </div>
             )}
           </div>
         )}
 
         {view === 'chat' && (
-          <div className="chat-page">
-            <h2>Health Assistant Bot</h2>
-            <div className="chat-window">
+          <div className="chat-container">
+            <div className="chat-header">
+              <i className="fas fa-user-md"></i>
+              <div>
+                <h2>Dr. Bot</h2>
+                <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>Always online</span>
+              </div>
+            </div>
+
+            <div className="chat-messages">
               {chatLog.map((msg, idx) => (
-                <div key={idx} className={`chat-msg ${msg.role}`}>
-                  <strong>{msg.role === 'bot' ? 'Bot' : 'You'}:</strong> {msg.text}
+                <div key={idx} className={`message-bubble ${msg.role}`}>
+                  {msg.text}
                 </div>
               ))}
             </div>
-            <form onSubmit={handleChat} className="chat-input-area">
-              <input
-                value={chatInput}
-                onChange={e => setChatInput(e.target.value)}
-                placeholder="Ask about symptoms..."
-              />
-              <button type="submit">Send</button>
+
+            <form onSubmit={handleChat} className="chat-input-wrapper">
+              <div className="input-row">
+                <input
+                  value={chatInput}
+                  onChange={e => setChatInput(e.target.value)}
+                  placeholder="Type your symptoms or questions..."
+                />
+                <button type="submit" className="send-btn">
+                  <i className="fas fa-paper-plane"></i>
+                </button>
+              </div>
             </form>
           </div>
         )}
